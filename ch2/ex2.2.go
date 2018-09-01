@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"gopl/ch2/tempconv"
+	"gopl/ch2/weightconv"
 )
 
 func main() {
@@ -28,6 +29,10 @@ func main() {
 		fmt.Printf("%s = %s, %s = %s\n",
 			foot, lengthconv.FToM(foot), metre, lengthconv.MToF(metre))
 
+		kilogram := weightconv.Kilogram(t)
+		pound := weightconv.Pound(t)
+		fmt.Printf("%s = %s, %s = %s\n",
+			kilogram, weightconv.KToP(kilogram), pound, weightconv.PToK(pound))
 
 	}
 }
