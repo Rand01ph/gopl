@@ -23,7 +23,6 @@ func main() {
 		fmt.Printf("%s = %s, %s = %s\n",
 			f, tempconv.FToC(f), c, tempconv.CToF(c))
 
-
 		foot := lengthconv.Foot(t)
 		metre := lengthconv.Metre(t)
 		fmt.Printf("%s = %s, %s = %s\n",

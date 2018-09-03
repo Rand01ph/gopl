@@ -1,11 +1,11 @@
 package main
 
 import (
-"fmt"
-"os"
-"strconv"
+	"fmt"
+	"os"
+	"strconv"
 
-"gopl/ch2/tempconv"
+	"gopl/ch2/tempconv"
 )
 
 func main() {
