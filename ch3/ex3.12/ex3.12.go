@@ -16,16 +16,10 @@ func main() {
 	sort.Strings(b)
 	second := strings.Join(b, "")
 
-	if len(first) != len(second) {
-		fmt.Printf("not equal\n")
-	} else {
-		for i := 0; i < len(first); i++ {
-			if first[i] != second[i] {
-				fmt.Printf("not equal\n")
-				os.Exit(1)
-			}
-		}
+	if first == second {
 		fmt.Printf("equal\n")
+	} else {
+		fmt.Printf("not equal\n")
 	}
 
 }
