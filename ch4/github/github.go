@@ -60,7 +60,7 @@ func SearchIssues(terms []string) (*IssuesSearchResult, error) {
 }
 
 // 使用编辑器编辑内容
-func Editorbuffer() string {
+func EditorBuffer() string {
 
 	editor := os.Getenv("EDITOR")
 	tmpDir := os.TempDir()
@@ -102,7 +102,7 @@ func Editorbuffer() string {
 func CreateIssues(owner, repo, title string) (*Issue, error) {
 
 	CIssuesURL := "https://api.github.com/repos/" + owner + "/" + repo + "/issues"
-	issueBody := Editorbuffer()
+	issueBody := EditorBuffer()
 
 	values := map[string]string{"title": title, "body": issueBody}
 	jsonValue, _ := json.Marshal(values)
