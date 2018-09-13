@@ -27,7 +27,7 @@ type Issue struct {
 	State     string
 	User      *User
 	CreatedAt time.Time `json:"created_at"`
-	Body      string // in Markdown format
+	Body      string    // in Markdown format
 }
 
 type User struct {
@@ -125,5 +125,123 @@ func CreateIssues(owner, repo, title string) (*Issue, error) {
 		return nil, err
 	}
 	defer resp.Body.Close()
-	return &result, nil
+	return &result, err
+}
+
+// 获取Issue
+// GET /repos/:owner/:repo/issues/:number 需要登录
+func GetIssues(owner, repo, number string) (*Issue, error) {
+	GIssuesURL := "https://api.github.com/repos/" + owner + "/" + repo + "/issues/" + number
+
+	req, err := http.NewRequest("GET", GIssuesURL, nil)
+	req.Header.Set("Content-Type", "application/json")
+	req.SetBasicAuth(os.Getenv("GITHUB_USER"), os.Getenv("GITHUB_PASS"))
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+
+	if err != nil {
+		return nil, err
+	}
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("search query failed: %s", resp.Status)
+	}
+	var result Issue
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	return &result, err
+}
+
+// 更新Issue
+// PATCH /repos/:owner/:repo/issues/:number
+func UpdateIssues(owner, repo, number string) (*Issue, error) {
+
+	UIssuesURL := "https://api.github.com/repos/" + owner + "/" + repo + "/issues/" + number
+
+	issue, _ := GetIssues(owner, repo, number)
+	issueBody := EditorBuffer()
+
+	values := map[string]string{"title": issue.Title, "body": issueBody}
+	jsonValue, _ := json.Marshal(values)
+
+	req, err := http.NewRequest("PATCH", UIssuesURL, bytes.NewBuffer(jsonValue))
+	req.Header.Set("Content-Type", "application/json")
+	req.SetBasicAuth(os.Getenv("GITHUB_USER"), os.Getenv("GITHUB_PASS"))
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+
+	if err != nil {
+		return nil, err
+	}
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("search query failed: %s", resp.Status)
+	}
+	var result Issue
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	return &result, err
+}
+
+// 关闭Issue
+//
+func CloseIssues(owner, repo, number string) (*Issue, error) {
+
+	UIssuesURL := "https://api.github.com/repos/" + owner + "/" + repo + "/issues/" + number
+	issue, _ := GetIssues(owner, repo, number)
+	values := map[string]string{"title": issue.Title, "body": issue.Body, "state": "closed"}
+	jsonValue, _ := json.Marshal(values)
+
+	req, err := http.NewRequest("PATCH", UIssuesURL, bytes.NewBuffer(jsonValue))
+	req.Header.Set("Content-Type", "application/json")
+	req.SetBasicAuth(os.Getenv("GITHUB_USER"), os.Getenv("GITHUB_PASS"))
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+
+	if err != nil {
+		return nil, err
+	}
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("search query failed: %s", resp.Status)
+	}
+	var result Issue
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	return &result, err
+}
+
+// 锁定Issue
+// PUT /repos/:owner/:repo/issues/:number/lock
+func LockIssues(owner, repo, number string) (string, error) {
+
+	LIssuesURL := "https://api.github.com/repos/" + owner + "/" + repo + "/issues/" + number + "/lock"
+
+	req, err := http.NewRequest("PUT", LIssuesURL, nil)
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Content-Lenth", "0")
+	req.SetBasicAuth(os.Getenv("GITHUB_USER"), os.Getenv("GITHUB_PASS"))
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+
+	if err != nil {
+		return resp.Status, err
+	}
+	if resp.StatusCode != http.StatusOK {
+		return resp.Status, fmt.Errorf("search query failed: %s", resp.Status)
+	}
+	var result Issue
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return resp.Status, err
+	}
+	defer resp.Body.Close()
+	return resp.Status, err
+
 }
