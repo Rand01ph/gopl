@@ -1,12 +1,13 @@
 package main
 
 import (
+	"bufio"
+	"fmt"
 	"io"
 	"log"
 	"net"
 	"os"
 	"strings"
-	"fmt"
 	"time"
 )
 
@@ -29,15 +30,20 @@ func main() {
 			log.Fatal(err)
 		}
 		defer conn.Close()
-		go clockwall(os.Stdout, conn)
+		go clockwall(c, conn)
 	}
 	for {
 		time.Sleep(time.Minute)
 	}
 }
 
-func clockwall(dst io.Writer, src io.Reader) {
-    if _, err := io.Copy(dst, src); err != nil {
-        log.Fatal(err)
-    }
+func clockwall(c clock, src io.Reader) {
+	b := bufio.NewReader(src)
+	for {
+		line, _, err := b.ReadLine()
+		fmt.Printf("tName:%s time:%s\n", c.tName, line)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
 }
