@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"golang.org/x/net/html"
+	"golang.org/x/net/proxy"
 	"net/http"
 	"os"
 	"strings"
@@ -62,7 +63,16 @@ func endElement(n *html.Node) {
 
 func main() {
 
-	resp, err := http.Get(os.Args[1])
+	dialer, err := proxy.SOCKS5("tcp", "127.0.0.1:1080", nil, proxy.Direct)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "can't connect to the proxy:", err)
+		os.Exit(1)
+	}
+	httpTransport := &http.Transport{}
+	httpClient := &http.Client{Transport: httpTransport,}
+	httpTransport.Dial = dialer.Dial
+
+	resp, err := httpClient.Get(os.Args[1])
 	if err != nil {
 		return
 	}
