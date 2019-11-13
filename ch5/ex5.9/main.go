@@ -6,11 +6,13 @@ import (
 )
 
 func expand(s string, f func(string) string) string {
-	sSlice := strings.Split(s, " ")
+	sSlice := strings.Split(s, "$")
 	for i, _ := range sSlice {
-		sSlice[i] = f(sSlice[i])
+		if i > 0 {
+			sSlice[i] = f(sSlice[i])
+		}
 	}
-	return strings.Join(sSlice, " ")
+	return strings.Join(sSlice, "")
 }
 
 func printS(s string) string {
@@ -18,6 +20,6 @@ func printS(s string) string {
 }
 
 func main() {
-	a := "aaa bbb ccc"
+	a := "$aaa$bbb$ccc"
 	fmt.Println(expand(a, printS))
 }
